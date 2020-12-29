@@ -3,11 +3,6 @@
     dental-chart="tooth-root"
     :style="rootStyle"
   >
-<!--    <toothPartial :size="partialBaseSize" position="left"></toothPartial>-->
-<!--    <toothPartial :size="partialBaseSize" position="top"></toothPartial>-->
-<!--    <toothPartial :size="partialBaseSize" position="center"></toothPartial>-->
-<!--    <toothPartial :size="partialBaseSize" position="right"></toothPartial>-->
-<!--    <toothPartial :size="partialBaseSize" position="bottom"></toothPartial>-->
   </div>
 </template>
 
@@ -25,6 +20,23 @@ export default {
     bottomPad: null,
     centerPad: null,
     offset: {},
+    positions: {
+      left: {
+        hover: false,
+      },
+      top: {
+        hover: false,
+      },
+      right: {
+        hover: false,
+      },
+      bottom: {
+        hover: false,
+      },
+      center: {
+        hover: false,
+      },
+    },
   }),
   beforeDestroy() {
     this.clearAll()
@@ -34,86 +46,58 @@ export default {
   },
   methods: {
     clearAll() {
-      if(this.leftPad && typeof this.leftPad.clear == 'function') {
-        this.leftPad.clear()
-      }
-
-      if(this.topPad && typeof this.topPad.clear == 'function') {
-        this.topPad.clear()
-      }
-
-      if(this.rightPad && typeof this.rightPad.clear == 'function') {
-        this.rightPad.clear()
-      }
-
-      if(this.bottomPad && typeof this.bottomPad.clear == 'function') {
-        this.bottomPad.clear()
-      }
-
-      if(this.centerPad && typeof this.centerPad.clear == 'function') {
-        this.centerPad.clear()
+      for(const position in this.positions) {
+        if(this[`${position}Pad`] && typeof this[`${position}Pad`].clear == 'function') {
+          this[`${position}Pad`].clear()
+        }
       }
     },
     async drawPartials() {
       this.clearAll()
       await this.$nextTick()
       this.offset = $(this.$el).offset()
-      this.drawLeft()
-      this.drawTop()
-      this.drawRight()
-      this.drawBottom()
-      this.drawCenter()
+      for(const position in this.positions) {
+        await this.drawPartial(position)
+      }
     },
-    drawLeft() {
-      const path = `M0 0 L${this.size} ${this.size} L${this.size} ${this.size*2} L0 ${this.size*3} L0 0`
-      this.leftPad = new raphael(this.offset.left, this.offset.top, this.toothSize, this.toothSize)
-      this.leftPad.clear()
-      this.leftPad
-          .path(path)
-          .hover(() => this.onHover())
-          .click(() => this.onClick())
+    async drawPartial(position) {
+      let path = null
+      switch (position) {
+        case 'left':
+          path = `M0 0 L${this.size} ${this.size} L${this.size} ${this.size*2} L0 ${this.size*3} L0 0`
+          break
+        case 'top':
+          path = `M0 0 L${this.size*3} 0 L${this.size*2} ${this.size} L${this.size} ${this.size} L0 0`
+          break
+        case 'right':
+          path = `M${this.size*3} 0 L${this.size*3} ${this.size*3} L${this.size*2} ${this.size*2} L${this.size*2} ${this.size} L${this.size*3} 0`
+          break
+        case 'bottom':
+          path = `M${this.size} ${this.size*2} L${this.size*2} ${this.size*2} L${this.size*3} ${this.size*3} L0 ${this.size*3} L${this.size} ${this.size*2}`
+          break
+        case 'center':
+          path = `M${this.size} ${this.size} L${this.size*2} ${this.size} L${this.size*2} ${this.size*2} L${this.size} ${this.size*2} L${this.size} ${this.size}`
+          break
+      }
+
+      this[`${position}Pad`] = new raphael(this.offset.left, this.offset.top, this.toothSize, this.toothSize)
+      this[`${position}Pad`].clear()
+      const element = this[`${position}Pad`].path(path)
+      console.warn('element', position, element)
+      element.hover((el) => this.onHover(el))
+      element.click((el) => this.onClick(el))
+
+      await this.$nextTick()
+      $(element.node).attr('position', position)
+      element.attr({
+        fill: 'red',
+      })
     },
-    drawTop() {
-      const path = `M0 0 L${this.size*3} 0 L${this.size*2} ${this.size} L${this.size} ${this.size} L0 0`
-      this.topPad = new raphael(this.offset.left, this.offset.top, this.toothSize, this.toothSize)
-      this.topPad.clear()
-      this.topPad
-          .path(path)
-          .hover(() => this.onHover())
-          .click(() => this.onClick())
+    onHover(el) {
+      console.warn('onHover', el.target, $(el.target).attr('position'))
     },
-    drawRight() {
-      const path = `M${this.size*3} 0 L${this.size*3} ${this.size*3} L${this.size*2} ${this.size*2} L${this.size*2} ${this.size} L${this.size*3} 0`
-      this.rightPad = new raphael(this.offset.left, this.offset.top, this.toothSize, this.toothSize)
-      this.rightPad.clear()
-      this.rightPad
-          .path(path)
-          .hover(() => this.onHover())
-          .click(() => this.onClick())
-    },
-    drawBottom() {
-      const path = `M${this.size} ${this.size*2} L${this.size*2} ${this.size*2} L${this.size*3} ${this.size*3} L0 ${this.size*3} L${this.size} ${this.size*2}`
-      this.bottomPad = new raphael(this.offset.left, this.offset.top, this.toothSize, this.toothSize)
-      this.bottomPad.clear()
-      this.bottomPad
-          .path(path)
-          .hover(() => this.onHover())
-          .click(() => this.onClick())
-    },
-    drawCenter() {
-      const path = `M${this.size} ${this.size} L${this.size*2} ${this.size} L${this.size*2} ${this.size*2} L${this.size} ${this.size*2} L${this.size} ${this.size}`
-      this.centerPad = new raphael(this.offset.left, this.offset.top, this.toothSize, this.toothSize)
-      this.centerPad.clear()
-      this.centerPad
-          .path(path)
-          .hover(() => this.onHover())
-          .click(() => this.onClick())
-    },
-    onHover() {
-      console.warn('onHover')
-    },
-    onClick() {
-      console.warn('onClick')
+    onClick(el) {
+      console.warn('onClick', el.target, $(el.target).attr('position'))
     },
   },
   computed: {
@@ -125,9 +109,6 @@ export default {
         width: `${this.toothSize}px`,
         height: `${this.toothSize}px`,
       }
-    },
-    partialBaseSize() {
-      return this.toothSize
     },
   },
   components: {
