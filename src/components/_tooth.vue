@@ -3,22 +3,49 @@
     dental-chart="tooth-root"
     :style="rootStyle"
   >
-    <toothPartial :size="size" position="left"></toothPartial>
-    <toothPartial :size="size" position="top"></toothPartial>
-    <toothPartial :size="size" position="center"></toothPartial>
-    <toothPartial :size="size" position="right"></toothPartial>
-    <toothPartial :size="size" position="bottom"></toothPartial>
+    <toothPartial
+      v-if="isReady"
+      v-for="(position, index) in positions"
+      :key="`${index}-${position}`"
+      :size="size"
+      :index="index"
+      :paper="paper"
+      :position="position"></toothPartial>
   </div>
 </template>
 
 <script lang="babel" type="text/babel">
+import raphael from 'raphael'
 export default {
   props: {
     index: Number,
   },
   data: () => ({
     toothSize: 90,
+    positions: ['left', 'top', 'center', 'right', 'bottom'],
+    paper: null,
+    offset: {},
+    isReady: false,
   }),
+  beforeDestroy() {
+    this.clearAll()
+  },
+  mounted() {
+    this.setupPaper()
+  },
+  methods: {
+    async setupPaper() {
+      this.offset = $(this.$el).offset()
+      this.paper = new raphael(this.offset.left, this.offset.top, this.toothSize, this.toothSize)
+      await this.$nextTick()
+      this.isReady = true
+    },
+    clearAll() {
+      if(!this.paper) return
+      if(typeof this.paper.clear != 'function') return;
+      this.paper.clear()
+    },
+  },
   computed: {
     size() {
       return this.toothSize/3
