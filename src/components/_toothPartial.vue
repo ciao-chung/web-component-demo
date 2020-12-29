@@ -13,6 +13,7 @@ export default {
   data: () => ({
     element: null,
     $node: null,
+    selected: false,
   }),
   mounted() {
     this.draw()
@@ -38,7 +39,21 @@ export default {
 
     },
     onClick(el) {
+      this.selected = !this.selected
       console.warn(this.$node)
+      if(this.selected) {
+        $(this.$node).attr({
+          stroke: 'red',
+          'stroke-dasharray': 0,
+        })
+      }
+
+      else {
+        $(this.$node).attr({
+          stroke: 'black',
+          'stroke-dasharray': 0,
+        })
+      }
     },
     onMouseover(el) {
       if(this.isOuter) {
@@ -49,11 +64,6 @@ export default {
         })
       }
 
-      else {
-        $(this.$node).attr({
-          'stroke-dasharray': 5,
-        })
-      }
     },
     onMouseout(el) {
       if(this.isOuter) {
@@ -61,12 +71,6 @@ export default {
           stroke: 'white',
           fill: 'white',
           'stroke-dasharray': 5,
-        })
-      }
-
-      else {
-        $(this.$node).attr({
-          'stroke-dasharray': 0,
         })
       }
 
@@ -137,7 +141,7 @@ export default {
           path = this.getPathString([ [0, 4], [1, 3], [2, 3], [3, 4] ])
           break
         case 'center':
-          path = this.getPathString([ [1, 2], [2, 2], [2, 4], [1, 4] ])
+          path = this.getPathString([ [1, 2], [2, 2], [2, 3], [1, 3] ])
           break
         case 'outer-top':
           if(this.createOuterTop) {

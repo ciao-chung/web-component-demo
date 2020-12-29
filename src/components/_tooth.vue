@@ -27,8 +27,9 @@ export default {
   },
   data: () => ({
     positions: [
-      'left', 'top', 'center', 'right', 'bottom',
       'outer-top', 'outer-bottom',
+      'left', 'top', 'right', 'bottom',
+      'center',
     ],
     paper: null,
     offset: {},
