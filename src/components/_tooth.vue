@@ -3,22 +3,33 @@
     dental-chart="tooth-root"
     :style="rootStyle"
   >
-    <toothPartial :size="partialBaseSize" position="left"></toothPartial>
-    <toothPartial :size="partialBaseSize" position="top"></toothPartial>
-    <toothPartial :size="partialBaseSize" position="center"></toothPartial>
-    <toothPartial :size="partialBaseSize" position="right"></toothPartial>
-    <toothPartial :size="partialBaseSize" position="bottom"></toothPartial>
+<!--    <toothPartial :size="partialBaseSize" position="left"></toothPartial>-->
+<!--    <toothPartial :size="partialBaseSize" position="top"></toothPartial>-->
+<!--    <toothPartial :size="partialBaseSize" position="center"></toothPartial>-->
+<!--    <toothPartial :size="partialBaseSize" position="right"></toothPartial>-->
+<!--    <toothPartial :size="partialBaseSize" position="bottom"></toothPartial>-->
   </div>
 </template>
 
 <script lang="babel" type="text/babel">
+import raphael from 'raphael'
 export default {
   props: {
     index: Number,
   },
   data: () => ({
     size: 30,
+    raphael: null,
   }),
+  mounted() {
+    const offset = $(this.$el).offset()
+    this.raphael = new raphael(offset.left, offset.top, this.size, this.size)
+    this.raphael
+        .path(`M 0 0 L${this.size*3} 0 L${this.size*2} ${this.size} L${this.size} ${this.size} L0 0`)
+        .hover(() => {
+          console.warn(666)
+        })
+  },
   computed: {
     rootStyle() {
       return {

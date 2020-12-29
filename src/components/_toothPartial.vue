@@ -1,5 +1,6 @@
 <template>
   <div class="tooth-partial-root">
+    <div class="foobar"></div>
     <canvas
       class="tooth-partial"
       :position="position"
@@ -13,6 +14,7 @@
 </template>
 
 <script lang="babel" type="text/babel">
+import raphael from 'raphael'
 export default {
   props: {
     size: Number,
@@ -23,12 +25,22 @@ export default {
   data: () => ({
     textCtx: null,
     ctx: null,
+    raphael: null,
   }),
   mounted() {
     this.draw()
   },
   methods: {
     draw() {
+      console.warn($(this.$el))
+      return
+      this.raphael = new raphael($(this.$el))
+      this.raphael
+          .path(`M 0 0 L${this.size*3} 0 L${this.size*2} ${this.size} L${this.size} ${this.size} L0 0`)
+          .hover(() => {
+            console.warn(666)
+          })
+      return
       this.ctx = $(this.$el).find('.tooth-partial')[0].getContext('2d')
       this.textCtx = $(this.$el).find('.tooth-partial-text')[0].getContext('2d')
       this.textCtx.font = `${this.size}px Arial`
