@@ -78,6 +78,10 @@ export default {
       this.textElement = this.paper.text(x, y, this.text)
       this.$textNode = this.textElement.node
       $(this.$textNode).attr('dental-chart-partial', 'text')
+      $(this.$textNode).attr({
+        stroke: 'blue',
+        'stroke-width': 1,
+      })
     },
     onDoubleClick() {
       this.$emit('toggleSelectAll')

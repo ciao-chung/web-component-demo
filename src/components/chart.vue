@@ -47,6 +47,7 @@ export default {
       return {
         rowIndex,
         columnIndex,
+        symbol: null, // 主符號
         left: this.getPartialData(),
         top: this.getPartialData(),
         right: this.getPartialData(),
