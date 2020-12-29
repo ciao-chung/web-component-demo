@@ -12,6 +12,7 @@ export default {
   },
   data: () => ({
     element: null,
+    $node: null,
   }),
   mounted() {
     this.draw()
@@ -25,6 +26,7 @@ export default {
       this.element.click((el) => this.onClick(el))
 
       await this.$nextTick()
+      this.$node = this.element.node
       $(this.element.node).attr('uid', this.uid)
       $(this.element.node).attr('position', this.position)
       this.element.attr({
@@ -33,30 +35,41 @@ export default {
       })
     },
     onHover(el) {
-      const position = $(el.target).attr('position')
+
     },
     onClick(el) {
-      const position = $(el.target).attr('position')
+      console.warn(this.$node)
     },
     onMouseover(el) {
-      const position = $(el.target).attr('position')
       if(this.isOuter) {
-        this.draw({
-          'stroke': 'red',
-          'stroke-dasharray': '-',
-          'stroke-opacity': 1,
+        $(this.$node).attr({
+          stroke: '#ff80ab',
+          fill: '#f3c2d2',
+          'stroke-dasharray': 5,
         })
       }
 
-    },
-    onMouseout(el) {
-      const position = $(el.target).attr('position')
-      if(this.isOuter) {
-        this.draw({
-          'stroke': 'white',
-          'stroke-opacity': 0,
+      else {
+        $(this.$node).attr({
+          'stroke-dasharray': 5,
         })
       }
+    },
+    onMouseout(el) {
+      if(this.isOuter) {
+        $(this.$node).attr({
+          stroke: 'white',
+          fill: 'white',
+          'stroke-dasharray': 5,
+        })
+      }
+
+      else {
+        $(this.$node).attr({
+          'stroke-dasharray': 0,
+        })
+      }
+
     },
     getPathString(points, close = true) {
       let path = ``
@@ -94,12 +107,13 @@ export default {
     },
     baseAttr() {
       let attr = {
+        cursor: 'pointer',
         fill: 'white',
       }
 
       if(this.isOuter) {
+        attr.stroke = 'white'
         attr['stroke-dasharray'] = '-'
-        attr['stroke-opacity'] = 0
       }
 
       return attr
