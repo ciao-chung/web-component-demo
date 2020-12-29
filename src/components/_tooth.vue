@@ -72,4 +72,5 @@ export default {
 div[dental-chart="tooth-root"]
   position: relative
   margin: 10px 10px
+  margin-bottom: 40px
 </style>

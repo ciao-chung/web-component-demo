@@ -21,15 +21,18 @@ export default {
     this.draw()
   },
   methods: {
-    async draw(hover = false) {
+    async draw(attr) {
       this.element = this.paper.path(this.path)
       this.element.hover((el) => this.onHover(el))
       this.element.click((el) => this.onClick(el))
 
       await this.$nextTick()
+      $(this.element.node).attr('uid', this.uid)
       $(this.element.node).attr('position', this.position)
       this.element.attr({
-        fill: !hover ? 'white' : 'skyblue',
+        fill: 'white',
+        // 'stroke-dasharray': '-',
+        ...attr,
       })
     },
     onHover(el) {
@@ -40,6 +43,9 @@ export default {
     },
   },
   computed: {
+    uid() {
+      return `${this.rowIndex}-${this.columnIndex}`
+    },
     path() {
       let path = null
       switch (this.position) {
