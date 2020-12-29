@@ -21,10 +21,10 @@ export default {
   methods: {
     async draw(attr) {
       this.element = this.paper.path(this.path)
-      this.element.mouseover((el) => this.onMouseover(el))
-      this.element.mouseout((el) => this.onMouseout(el))
-      this.element.hover((el) => this.onHover(el))
-      this.element.click((el) => this.onClick(el))
+      this.element.dblclick(() => this.onDoubleClick())
+      this.element.mouseover(() => this.onMouseover())
+      this.element.mouseout(() => this.onMouseout())
+      this.element.click(() => this.onClick())
 
       await this.$nextTick()
       this.$node = this.element.node
@@ -35,27 +35,29 @@ export default {
         ...attr,
       })
     },
-    onHover(el) {
-
+    onDoubleClick() {
+      this.$emit('toggleSelectAll')
     },
-    onClick(el) {
-      this.selected = !this.selected
-      console.warn(this.$node)
+    onClick(status) {
+      this.selected = status != undefined ? status : !this.selected
       if(this.selected) {
         $(this.$node).attr({
           stroke: 'red',
           'stroke-dasharray': 0,
+          'stroke-width': 3,
         })
       }
 
       else {
         $(this.$node).attr({
-          stroke: 'black',
+          stroke: !this.isOuter ? 'black' : null,
           'stroke-dasharray': 0,
+          'stroke-width': 1,
         })
       }
     },
-    onMouseover(el) {
+    onMouseover() {
+      if(this.selected) return
       if(this.isOuter) {
         $(this.$node).attr({
           stroke: '#ff80ab',
@@ -63,9 +65,9 @@ export default {
           'stroke-dasharray': 5,
         })
       }
-
     },
-    onMouseout(el) {
+    onMouseout() {
+      if(this.selected) return
       if(this.isOuter) {
         $(this.$node).attr({
           stroke: 'white',
@@ -73,7 +75,6 @@ export default {
           'stroke-dasharray': 5,
         })
       }
-
     },
     getPathString(points, close = true) {
       let path = ``

@@ -6,6 +6,8 @@
     <toothPartial
       v-if="isReady"
       v-for="(position, index) in positions"
+      ref="partial"
+      @toggleSelectAll="toggleSelectAll"
       :key="`${index}-${position}`"
       :size="baseSize"
       :index="index"
@@ -28,13 +30,14 @@ export default {
   data: () => ({
     positions: [
       'outer-top', 'outer-bottom',
-      'left', 'top', 'right', 'bottom',
+      'left', 'top', 'bottom', 'right',
       'center',
     ],
     paper: null,
     offset: {},
     isReady: false,
     baseSize: 20,
+    selectAll: false,
   }),
   beforeDestroy() {
     this.clearAll()
@@ -43,6 +46,15 @@ export default {
     this.setupPaper()
   },
   methods: {
+    toggleSelectAll() {
+      this.selectAll = !this.selectAll
+      if(!Array.isArray(this.$refs.partial)) return
+      for(const component of this.$refs.partial) {
+        if(typeof component.onClick != 'function') continue
+        if(component.isOuter === true) continue
+        component.onClick(this.selectAll)
+      }
+    },
     async setupPaper() {
       this.offset = $(this.$el).offset()
       this.paper = new raphael(this.offset.left, this.offset.top, this.rootStyle.width, this.rootStyle.height)
