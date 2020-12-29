@@ -47,6 +47,20 @@ export default {
       return {
         rowIndex,
         columnIndex,
+        left: this.getPartialData(),
+        top: this.getPartialData(),
+        right: this.getPartialData(),
+        bottom: this.getPartialData(),
+        center: this.getPartialData(),
+        'outer-top': this.getPartialData(),
+        'outer-bottom': this.getPartialData(),
+      }
+    },
+    getPartialData() {
+      return {
+        marked: false, // 是否已標記過
+        backgroundColor: 'white',
+        symbol: null,
       }
     },
   },

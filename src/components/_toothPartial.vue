@@ -12,11 +12,13 @@ export default {
   },
   data: () => ({
     element: null,
+    textElement: null,
     $node: null,
     selected: false,
   }),
   mounted() {
     this.draw()
+    this.drawSymbol()
   },
   methods: {
     async draw(attr) {
@@ -34,6 +36,40 @@ export default {
         ...this.baseAttr,
         ...attr,
       })
+    },
+    async drawSymbol() {
+      if(!this.text) return
+
+      let x, y
+      switch (this.position) {
+        case 'outer-top':
+          x = this.size*1.5
+          y = this.size*0.5
+          break
+        case 'outer-bottom':
+          x = this.size*1.5
+          y = this.size*4.5
+          break
+        case 'left':
+          x = this.size*0.5
+          y = this.size*2.5
+          break
+        case 'top':
+          x = this.size*1.5
+          y = this.size*1.5
+          break
+        case 'right':
+          x = this.size*2.5
+          y = this.size*2.5
+          break
+        case 'bottom':
+          x = this.size*1.5
+          y = this.size*3.5
+          break
+      }
+      if(x && y) {
+        this.textElement = this.paper.text(x, y, this.text)
+      }
     },
     onDoubleClick() {
       this.$emit('toggleSelectAll')
@@ -71,7 +107,7 @@ export default {
       if(this.isOuter) {
         $(this.$node).attr({
           stroke: 'white',
-          fill: 'white',
+          fill: this.backgroundColor,
           'stroke-dasharray': 5,
         })
       }
@@ -113,7 +149,7 @@ export default {
     baseAttr() {
       let attr = {
         cursor: 'pointer',
-        fill: 'white',
+        fill: this.backgroundColor,
       }
 
       if(this.isOuter) {
@@ -158,7 +194,20 @@ export default {
       return path
     },
     text() {
+      if(!this.marked) return null
+      if(!this.createOuterTop && this.position === 'outer-top') return null
+      if(!this.createOuterBottom && this.position === 'outer-bottom') return null
       return this.position.charAt(0)
+    },
+    backgroundColor() {
+      if(!this.marked) return null
+      return 'skyblue'
+    },
+    marked() {
+      return this.partialData.marked === true
+    },
+    partialData() {
+      return this.data[this.position] || {}
     },
   },
 }
