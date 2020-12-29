@@ -10,6 +10,9 @@
       :size="size"
       :index="index"
       :paper="paper"
+      :data="data"
+      :rowIndex="rowIndex"
+      :columnIndex="columnIndex"
       :position="position"></toothPartial>
   </div>
 </template>
@@ -18,7 +21,9 @@
 import raphael from 'raphael'
 export default {
   props: {
-    index: Number,
+    data: Object,
+    rowIndex: Number,
+    columnIndex: Number,
   },
   data: () => ({
     toothSize: 90,

@@ -7,7 +7,9 @@
 <script lang="babel" type="text/babel">
 export default {
   props: {
-    index: Number,
+    data: Object,
+    rowIndex: Number,
+    columnIndex: Number,
     size: Number,
     position: String, // 位置: top, bottom, left, right, center
     paper: Object,
@@ -25,18 +27,15 @@ export default {
       this.element.click((el) => this.onClick(el))
 
       await this.$nextTick()
-      $(this.element.node).attr('index', this.index)
       $(this.element.node).attr('position', this.position)
       this.element.attr({
         fill: !hover ? 'white' : 'skyblue',
       })
     },
     onHover(el) {
-      const index = $(el.target).attr('index')
       const position = $(el.target).attr('position')
     },
     onClick(el) {
-      const index = $(el.target).attr('index')
       const position = $(el.target).attr('position')
     },
   },

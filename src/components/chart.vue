@@ -1,16 +1,55 @@
 <template>
-  <div dental-chart="root">
-    <tooth
-      v-for="i in 10"
-      :key="i"
-      :index="i"
-    ></tooth>
+  <div dental-chart="root" v-if="teeth">
+    <div
+      v-for="(row, rowIndex) in teeth"
+      dental-chart="row"
+      :rowIndex="rowIndex"
+      :row="row"
+    >
+      <tooth
+        v-for="(data, columnIndex) in row"
+        :key="`${rowIndex}-${columnIndex}`"
+        :data="data"
+        :rowIndex="rowIndex"
+        :columnIndex="columnIndex"
+      ></tooth>
+    </div>
   </div>
 </template>
 
 <script lang="babel" type="text/babel">
 import chart from './chart.js'
 export default {
+  data: () => ({
+    teeth: null,
+  }),
+  created() {
+    this.init()
+  },
+  methods: {
+    init() {
+      let teeth = [
+        this.getRow(0),
+        this.getRow(1),
+      ]
+
+      this.teeth = teeth
+    },
+    getRow(rowIndex) {
+      let result = []
+      for(let i=1; i<=6; i++) {
+        result.push(this.getToothData(rowIndex, i))
+      }
+
+      return result
+    },
+    getToothData(rowIndex, columnIndex) {
+      return {
+        rowIndex,
+        columnIndex,
+      }
+    },
+  },
   components: {
     tooth: () => import('./_tooth.vue'),
   },
@@ -19,7 +58,7 @@ export default {
 
 <style lang="sass" type="text/sass" scoped>
 div[dental-chart="root"]
-  //border: 1px grey solid
-  display: flex
-  flex-wrap: wrap
+  div[dental-chart="row"]
+    display: flex
+    flex-wrap: wrap
 </style>
