@@ -1,50 +1,43 @@
 <template>
-  <div dental-chart="tooth-root">
-    <div dental-chart-tooth-partial="left"></div>
+  <div
+    dental-chart="tooth-root"
+    :style="rootStyle"
+  >
+    <toothPartial :size="partialBaseSize" position="left"></toothPartial>
+    <toothPartial :size="partialBaseSize" position="top"></toothPartial>
+    <toothPartial :size="partialBaseSize" position="center"></toothPartial>
+    <toothPartial :size="partialBaseSize" position="right"></toothPartial>
+    <toothPartial :size="partialBaseSize" position="bottom"></toothPartial>
   </div>
 </template>
 
 <script lang="babel" type="text/babel">
 export default {
+  props: {
+    index: Number,
+  },
   data: () => ({
-    
+    size: 30,
   }),
-  created() {},
+  computed: {
+    rootStyle() {
+      return {
+        width: `${this.size*3}px`,
+        height: `${this.size*3}px`,
+      }
+    },
+    partialBaseSize() {
+      return this.size
+    },
+  },
+  components: {
+    toothPartial: () => import('./_toothPartial.vue'),
+  },
 }
 </script>
 
 <style lang="sass" type="text/sass" scoped>
-$size: 50px
 div[dental-chart="tooth-root"]
-  width: $size*3
-  height: $size*3
-  border: 1px grey solid
+  border: 1px red solid
   position: relative
-  $trapezoidBaseWidth: $size
-  $trapezoidBaseHeight: $size
-  $trapezoidSideWidth: $size
-  &>div[dental-chart-tooth-partial]
-    //border: 1px red solid
-    //width: 40px
-    //height: 40px
-    //border-bottom: 1px solid orange
-    width: $trapezoidBaseWidth
-    height: $trapezoidBaseHeight
-    background: red
-    margin-left: $trapezoidSideWidth
-    position: relative
-    &::before
-      content: ''
-      border-right: $trapezoidSideWidth solid blue
-      border-bottom: $trapezoidBaseHeight solid transparent
-      position: absolute
-      left: -1*$trapezoidSideWidth
-      top: 0
-    &::after
-      content: ''
-      border-left: $trapezoidSideWidth solid green
-      border-bottom: $trapezoidBaseHeight solid transparent
-      position: absolute
-      right: -1*$trapezoidSideWidth
-      top: 0
 </style>

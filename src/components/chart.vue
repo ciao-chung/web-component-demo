@@ -2,11 +2,14 @@
   <div dental-chart="root">
     <tooth
       v-for="i in 10"
+      :key="i"
+      :index="i"
     ></tooth>
   </div>
 </template>
 
 <script lang="babel" type="text/babel">
+import chart from './chart.js'
 export default {
   components: {
     tooth: () => import('./_tooth.vue'),
