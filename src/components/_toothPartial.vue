@@ -1,15 +1,6 @@
 <template>
   <div class="tooth-partial-root">
-    <div class="foobar"></div>
-    <canvas
-      class="tooth-partial"
-      :position="position"
-    ></canvas>
 
-    <canvas
-      class="tooth-partial-text"
-      :position="position"
-    ></canvas>
   </div>
 </template>
 
@@ -23,86 +14,68 @@ export default {
     position: String,
   },
   data: () => ({
-    textCtx: null,
-    ctx: null,
-    raphael: null,
+    paper: null,
+    offset: {},
+    element: null,
+    hover: false,
   }),
+  beforeDestroy() {
+    this.clearAll()
+  },
   mounted() {
     this.draw()
   },
   methods: {
-    draw() {
-      console.warn($(this.$el))
-      return
-      this.raphael = new raphael($(this.$el))
-      this.raphael
-          .path(`M 0 0 L${this.size*3} 0 L${this.size*2} ${this.size} L${this.size} ${this.size} L0 0`)
-          .hover(() => {
-            console.warn(666)
-          })
-      return
-      this.ctx = $(this.$el).find('.tooth-partial')[0].getContext('2d')
-      this.textCtx = $(this.$el).find('.tooth-partial-text')[0].getContext('2d')
-      this.textCtx.font = `${this.size}px Arial`
-      this.textCtx.fillStyle = 'grey'
-      this.textCtx.textAlign = 'center'
-      this.textCtx.textBaseline = 'middle'
-      this[this.position]() // 依照類型畫出區塊
-      this.ctx.fill()
-      this.ctx.stroke()
+    clearAll() {
+      if(!this.paper) return
+      if(typeof this.paper.clear != 'function') return;
+      this.paper.clear()
     },
-    left() {
-      this.ctx.fillStyle = 'pink'
-      this.textCtx.fillText(this.text, this.size*0.5, this.size*1.5)
-      this.ctx.beginPath()
-      this.ctx.moveTo(0, 0)
-      this.ctx.lineTo(this.size, this.size)
-      this.ctx.lineTo(this.size, this.size*2)
-      this.ctx.lineTo(0, this.size*3)
-      this.ctx.lineTo(0, 0)
+    async draw(hover = false) {
+      this.clearAll()
+      this.offset = $(this.$el).offset()
+      this.paper = new raphael(this.offset.left, this.offset.top, $(this.$el).width(), $(this.$el).height())
+      this.paper.clear()
+      this.element = this.paper.path(this.path)
+      this.element.hover((el) => this.onHover(el))
+      this.element.click((el) => this.onClick(el))
+
+      await this.$nextTick()
+      $(this.element.node).attr('position', this.position)
+      this.element.attr({
+        fill: !hover ? 'white' : 'skyblue',
+      })
     },
-    top() {
-      this.textCtx.fillText(this.text, this.size*1.5, this.size/2)
-      this.ctx.fillStyle = 'yellow'
-      this.ctx.beginPath()
-      this.ctx.moveTo(0, 0)
-      this.ctx.lineTo(this.size*3, 0);
-      this.ctx.lineTo(this.size*2, this.size)
-      this.ctx.lineTo(this.size, this.size)
-      this.ctx.lineTo(0, 0)
+    onHover(el) {
+      console.warn($(el.target), $(el.target).attr('position'))
+      // this.draw(true)
     },
-    center() {
-      this.textCtx.fillText(this.text, this.size*1.5, this.size*1.5)
-      this.ctx.fillStyle = 'orange'
-      this.ctx.beginPath()
-      this.ctx.moveTo(this.size, this.size)
-      this.ctx.lineTo(this.size*2, this.size)
-      this.ctx.lineTo(this.size*2, this.size*2)
-      this.ctx.lineTo(this.size, this.size*2)
-      this.ctx.lineTo(this.size, this.size)
-    },
-    right() {
-      this.ctx.fillStyle = 'lightblue'
-      this.textCtx.fillText(this.text, this.size*2.5, this.size*1.5)
-      this.ctx.beginPath()
-      this.ctx.moveTo(this.size*3, 0)
-      this.ctx.lineTo(this.size*2, this.size)
-      this.ctx.lineTo(this.size*2, this.size*2)
-      this.ctx.lineTo(this.size*3, this.size*3)
-      this.ctx.lineTo(this.size*3, 0)
-    },
-    bottom() {
-      this.ctx.fillStyle = 'lightgreen'
-      this.ctx.beginPath()
-      this.ctx.moveTo(0, this.size*3)
-      this.textCtx.fillText(this.text, this.size*1.5, this.size*2.5)
-      this.ctx.lineTo(this.size, this.size*2)
-      this.ctx.lineTo(this.size*2, this.size*2)
-      this.ctx.lineTo(this.size*3, this.size*3)
-      this.ctx.lineTo(0, this.size*3)
+    onClick(el) {
+
     },
   },
   computed: {
+    path() {
+      let path = null
+      switch (this.position) {
+        case 'left':
+          path = `M0 0 L${this.size} ${this.size} L${this.size} ${this.size*2} L0 ${this.size*3} L0 0`
+          break
+        case 'top':
+          path = `M0 0 L${this.size*3} 0 L${this.size*2} ${this.size} L${this.size} ${this.size} L0 0`
+          break
+        case 'right':
+          path = `M${this.size*3} 0 L${this.size*3} ${this.size*3} L${this.size*2} ${this.size*2} L${this.size*2} ${this.size} L${this.size*3} 0`
+          break
+        case 'bottom':
+          path = `M${this.size} ${this.size*2} L${this.size*2} ${this.size*2} L${this.size*3} ${this.size*3} L0 ${this.size*3} L${this.size} ${this.size*2}`
+          break
+        case 'center':
+          path = `M${this.size} ${this.size} L${this.size*2} ${this.size} L${this.size*2} ${this.size*2} L${this.size} ${this.size*2} L${this.size} ${this.size}`
+          break
+      }
+      return path
+    },
     text() {
       return this.position.charAt(0)
     },
@@ -112,9 +85,7 @@ export default {
 
 <style lang="sass" type="text/sass" scoped>
 .tooth-partial-root
-  position: relative
-  .tooth-partial
-    position: absolute
-  .tooth-partial-text
-    position: absolute
+  width: 100%
+  height: 100%
+  position: absolute
 </style>
