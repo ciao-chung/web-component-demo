@@ -7,7 +7,7 @@
       v-if="isReady"
       v-for="(position, index) in positions"
       :key="`${index}-${position}`"
-      :size="size"
+      :size="baseSize"
       :index="index"
       :paper="paper"
       :data="data"
@@ -26,11 +26,14 @@ export default {
     columnIndex: Number,
   },
   data: () => ({
-    toothSize: 90,
-    positions: ['left', 'top', 'center', 'right', 'bottom'],
+    positions: [
+      'left', 'top', 'center', 'right', 'bottom',
+      'outer-top', 'outer-bottom',
+    ],
     paper: null,
     offset: {},
     isReady: false,
+    baseSize: 20,
   }),
   beforeDestroy() {
     this.clearAll()
@@ -41,7 +44,7 @@ export default {
   methods: {
     async setupPaper() {
       this.offset = $(this.$el).offset()
-      this.paper = new raphael(this.offset.left, this.offset.top, this.toothSize, this.toothSize)
+      this.paper = new raphael(this.offset.left, this.offset.top, this.rootStyle.width, this.rootStyle.height)
       await this.$nextTick()
       this.isReady = true
     },
@@ -52,13 +55,10 @@ export default {
     },
   },
   computed: {
-    size() {
-      return this.toothSize/3
-    },
     rootStyle() {
       return {
-        width: `${this.toothSize}px`,
-        height: `${this.toothSize}px`,
+        width: `${this.baseSize*3}px`,
+        height: `${this.baseSize*5}px`,
       }
     },
   },
@@ -71,6 +71,5 @@ export default {
 <style lang="sass" type="text/sass" scoped>
 div[dental-chart="tooth-root"]
   position: relative
-  margin: 10px 10px
-  margin-bottom: 40px
+  margin-right: 10px
 </style>

@@ -1,8 +1,4 @@
-<template>
-  <div class="tooth-partial-root">
-
-  </div>
-</template>
+<template></template>
 
 <script lang="babel" type="text/babel">
 export default {
@@ -23,6 +19,8 @@ export default {
   methods: {
     async draw(attr) {
       this.element = this.paper.path(this.path)
+      this.element.mouseover((el) => this.onMouseover(el))
+      this.element.mouseout((el) => this.onMouseout(el))
       this.element.hover((el) => this.onHover(el))
       this.element.click((el) => this.onClick(el))
 
@@ -30,8 +28,7 @@ export default {
       $(this.element.node).attr('uid', this.uid)
       $(this.element.node).attr('position', this.position)
       this.element.attr({
-        fill: 'white',
-        // 'stroke-dasharray': '-',
+        ...this.baseAttr,
         ...attr,
       })
     },
@@ -41,8 +38,72 @@ export default {
     onClick(el) {
       const position = $(el.target).attr('position')
     },
+    onMouseover(el) {
+      const position = $(el.target).attr('position')
+      if(this.isOuter) {
+        this.draw({
+          'stroke': 'red',
+          'stroke-dasharray': '-',
+          'stroke-opacity': 1,
+        })
+      }
+
+    },
+    onMouseout(el) {
+      const position = $(el.target).attr('position')
+      if(this.isOuter) {
+        this.draw({
+          'stroke': 'white',
+          'stroke-opacity': 0,
+        })
+      }
+    },
+    getPathString(points, close = true) {
+      let path = ``
+      let startX = null
+      let startY = null
+      for(const index in points) {
+        const point = points[index]
+        const x = point[0]
+        const y = point[1]
+        if(index == 0) {
+          startX = x
+          startY = y
+          path = `M ${this.size*x} ${this.size*y} `
+        }
+
+        else {
+          path += `L ${this.size*x} ${this.size*y} `
+        }
+      }
+
+      if(!close) return path
+      path += `L ${this.size*startX} ${this.size*startY} `
+      return path
+    },
   },
   computed: {
+    createOuterTop() {
+      return this.rowIndex%2 == 0
+    },
+    createOuterBottom() {
+      return this.rowIndex%2 == 1
+    },
+    isOuter() {
+      return new RegExp(/outer/g).test(this.position)
+    },
+    baseAttr() {
+      let attr = {
+        fill: 'white',
+      }
+
+      if(this.isOuter) {
+        attr['stroke-dasharray'] = '-'
+        attr['stroke-opacity'] = 0
+      }
+
+      return attr
+    },
     uid() {
       return `${this.rowIndex}-${this.columnIndex}`
     },
@@ -50,19 +111,29 @@ export default {
       let path = null
       switch (this.position) {
         case 'left':
-          path = `M0 0 L${this.size} ${this.size} L${this.size} ${this.size*2} L0 ${this.size*3} L0 0`
+          path = this.getPathString([ [0, 1], [1, 2], [1, 3], [0, 4] ])
           break
         case 'top':
-          path = `M0 0 L${this.size*3} 0 L${this.size*2} ${this.size} L${this.size} ${this.size} L0 0`
+          path = this.getPathString([ [0, 1], [3, 1], [2, 2], [1, 2] ])
           break
         case 'right':
-          path = `M${this.size*3} 0 L${this.size*3} ${this.size*3} L${this.size*2} ${this.size*2} L${this.size*2} ${this.size} L${this.size*3} 0`
+          path = this.getPathString([ [2, 2], [3, 1], [3, 4], [2, 3] ])
           break
         case 'bottom':
-          path = `M${this.size} ${this.size*2} L${this.size*2} ${this.size*2} L${this.size*3} ${this.size*3} L0 ${this.size*3} L${this.size} ${this.size*2}`
+          path = this.getPathString([ [0, 4], [1, 3], [2, 3], [3, 4] ])
           break
         case 'center':
-          path = `M${this.size} ${this.size} L${this.size*2} ${this.size} L${this.size*2} ${this.size*2} L${this.size} ${this.size*2} L${this.size} ${this.size}`
+          path = this.getPathString([ [1, 2], [2, 2], [2, 4], [1, 4] ])
+          break
+        case 'outer-top':
+          if(this.createOuterTop) {
+            path = this.getPathString([ [0, 1], [1, 0], [2, 0], [3, 1] ], false)
+          }
+          break
+        case 'outer-bottom':
+          if(this.createOuterBottom) {
+            path = this.getPathString([ [0, 4], [1, 5], [2, 5], [3, 4] ], false)
+          }
           break
       }
       return path
