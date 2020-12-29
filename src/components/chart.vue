@@ -19,7 +19,7 @@ export default {
 
 <style lang="sass" type="text/sass" scoped>
 div[dental-chart="root"]
-  border: 1px grey solid
+  //border: 1px grey solid
   display: flex
   flex-wrap: wrap
 </style>
