@@ -14,6 +14,7 @@ export default {
     element: null,
     textElement: null,
     $node: null,
+    $textNode: null,
     selected: false,
   }),
   mounted() {
@@ -30,8 +31,9 @@ export default {
 
       await this.$nextTick()
       this.$node = this.element.node
-      $(this.element.node).attr('uid', this.uid)
-      $(this.element.node).attr('position', this.position)
+      $(this.$node).attr('dental-chart-partial', 'shape')
+      $(this.$node).attr('uid', this.uid)
+      $(this.$node).attr('position', this.position)
       this.element.attr({
         ...this.baseAttr,
         ...attr,
@@ -42,6 +44,10 @@ export default {
 
       let x, y
       switch (this.position) {
+        case 'center':
+          x = this.size*1.5
+          y = this.size*2.5
+          break
         case 'outer-top':
           x = this.size*1.5
           y = this.size*0.5
@@ -67,9 +73,11 @@ export default {
           y = this.size*3.5
           break
       }
-      if(x && y) {
-        this.textElement = this.paper.text(x, y, this.text)
-      }
+
+      if(x === undefined || y === undefined) return
+      this.textElement = this.paper.text(x, y, this.text)
+      this.$textNode = this.textElement.node
+      $(this.$textNode).attr('dental-chart-partial', 'text')
     },
     onDoubleClick() {
       this.$emit('toggleSelectAll')
@@ -107,7 +115,7 @@ export default {
       if(this.isOuter) {
         $(this.$node).attr({
           stroke: 'white',
-          fill: this.backgroundColor,
+          fill: 'white',
           'stroke-dasharray': 5,
         })
       }
@@ -149,7 +157,7 @@ export default {
     baseAttr() {
       let attr = {
         cursor: 'pointer',
-        fill: this.backgroundColor,
+        fill: 'white',
       }
 
       if(this.isOuter) {
@@ -194,7 +202,7 @@ export default {
       return path
     },
     text() {
-      if(!this.marked) return null
+      // if(!this.marked) return null
       if(!this.createOuterTop && this.position === 'outer-top') return null
       if(!this.createOuterBottom && this.position === 'outer-bottom') return null
       return this.position.charAt(0)

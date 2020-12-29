@@ -70,9 +70,12 @@ export default {
 }
 </script>
 
-<style lang="sass" type="text/sass" scoped>
+<style lang="sass" type="text/sass">
 div[dental-chart="root"]
   div[dental-chart="row"]
     display: flex
     flex-wrap: wrap
+
+*[dental-chart-partial="text"]
+  user-select: none
 </style>

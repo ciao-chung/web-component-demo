@@ -34,7 +34,6 @@ export default {
       'center',
     ],
     paper: null,
-    offset: {},
     isReady: false,
     baseSize: 20,
     selectAll: false,
@@ -56,8 +55,8 @@ export default {
       }
     },
     async setupPaper() {
-      this.offset = $(this.$el).offset()
-      this.paper = new raphael(this.offset.left, this.offset.top, this.rootStyle.width, this.rootStyle.height)
+      const offset = $(this.$el).offset()
+      this.paper = new raphael(offset.left, offset.top, this.rootStyle.width, this.rootStyle.height)
       await this.$nextTick()
       this.isReady = true
     },
@@ -81,7 +80,7 @@ export default {
 }
 </script>
 
-<style lang="sass" type="text/sass" scoped>
+<style lang="sass" type="text/sass">
 div[dental-chart="tooth-root"]
   position: relative
   margin-right: 10px
