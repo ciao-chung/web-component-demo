@@ -18,4 +18,5 @@ export default {
 div[dental-chart="root"]
   border: 1px grey solid
   display: flex
+  flex-wrap: wrap
 </style>
