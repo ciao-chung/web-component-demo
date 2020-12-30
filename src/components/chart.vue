@@ -14,6 +14,9 @@
         :columnIndex="columnIndex"
       ></tooth>
     </div>
+
+
+    <items></items>
   </div>
 </template>
 
@@ -67,6 +70,7 @@ export default {
   },
   components: {
     tooth: () => import('./_tooth.vue'),
+    items: () => import('./_items.vue'),
   },
 }
 </script>

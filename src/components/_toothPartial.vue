@@ -17,11 +17,22 @@ export default {
     $textNode: null,
     selected: false,
   }),
+  beforeDestroy() {
+    this.selected = false
+  },
   mounted() {
-    this.draw()
-    this.drawSymbol()
+    this.init()
+    this.$bus.$on(this.$CONSTANT.EVENT_GET_SELECTED, (items) => {
+      if(!this.selected) return
+      items.push(_cloneDeep(this.partialData))
+    })
   },
   methods: {
+    async init() {
+      await this.draw()
+      await this.drawSymbol()
+      await this.setupStyle()
+    },
     async draw(attr) {
       this.element = this.paper.path(this.path)
       this.element.dblclick(() => this.onDoubleClick())
@@ -81,6 +92,12 @@ export default {
       $(this.$textNode).attr({
         stroke: 'blue',
         'stroke-width': 1,
+      })
+    },
+    async setupStyle() {
+      await this.$nextTick()
+      $(this.$node).attr({
+        fill: this.backgroundColor,
       })
     },
     onDoubleClick() {
@@ -206,13 +223,13 @@ export default {
       return path
     },
     text() {
-      // if(!this.marked) return null
+      if(!this.marked) return null
       if(!this.createOuterTop && this.position === 'outer-top') return null
       if(!this.createOuterBottom && this.position === 'outer-bottom') return null
       return this.position.charAt(0)
     },
     backgroundColor() {
-      if(!this.marked) return null
+      if(!this.marked) return 'white'
       return 'skyblue'
     },
     marked() {
@@ -220,6 +237,16 @@ export default {
     },
     partialData() {
       return this.data[this.position] || {}
+    },
+  },
+  watch: {
+    backgroundColor() {
+      console.warn('backgroundColor change', this.backgroundColor)
+      this.setupStyle()
+    },
+    text() {
+      console.warn('text change', this.text)
+      this.setupStyle()
     },
   },
 }
