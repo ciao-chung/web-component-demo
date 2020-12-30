@@ -1,5 +1,7 @@
 <template>
   <div dental-chart="root" v-if="teeth">
+    <button @click="triggerEvent">trigger event</button>
+
     <div
       v-for="(row, rowIndex) in teeth"
       dental-chart="row"
@@ -35,8 +37,20 @@ export default {
   }),
   created() {
     this.init()
+    console.warn('document', document)
+    window.addEventListener('foobar', (event) => {
+      console.warn('called', event.detail)
+    })
   },
   methods: {
+    triggerEvent() {
+      const event = new CustomEvent('foobar', {
+        detail: {
+          data: 'data...',
+        },
+      })
+      window.dispatchEvent(event)
+    },
     init() {
       let teeth = [
         this.getRow(0),
