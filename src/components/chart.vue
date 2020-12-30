@@ -12,11 +12,18 @@
         :data="data"
         :rowIndex="rowIndex"
         :columnIndex="columnIndex"
+        :updateToothData="updateToothData"
       ></tooth>
     </div>
 
 
     <items></items>
+
+    <div v-for="row in teeth"
+    >
+      <div>{{row}}</div>
+      <hr>
+    </div>
   </div>
 </template>
 
@@ -51,6 +58,7 @@ export default {
         rowIndex,
         columnIndex,
         symbol: null, // 主符號
+        marked: false, // 是否已標記過
         left: this.getPartialData(),
         top: this.getPartialData(),
         right: this.getPartialData(),
@@ -66,6 +74,10 @@ export default {
         backgroundColor: 'white',
         symbol: null,
       }
+    },
+    updateToothData(rowIndex, columnIndex, data) {
+      console.warn('updateToothData', rowIndex, columnIndex, data)
+      this.$set(this.teeth[rowIndex], columnIndex, data)
     },
   },
   components: {

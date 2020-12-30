@@ -15,7 +15,8 @@
       :data="data"
       :rowIndex="rowIndex"
       :columnIndex="columnIndex"
-      :position="position"></toothPartial>
+      :position="position"
+    ></toothPartial>
   </div>
 </template>
 
@@ -26,6 +27,7 @@ export default {
     data: Object,
     rowIndex: Number,
     columnIndex: Number,
+    updateToothData: Function,
   },
   data: () => ({
     positions: [
@@ -43,8 +45,42 @@ export default {
   },
   mounted() {
     this.setupPaper()
+    this.$bus.$on(this.$CONSTANT.EVENT_GET_SELECTED, (items) => this.onGetEvent(items))
   },
   methods: {
+    onGetEvent(items) {
+      if(this.checkPartialAnySelected() === false) return
+      let data = _cloneDeep(this.data)
+      let item = {
+        rowIndex: this.rowIndex,
+        columnIndex: this.columnIndex,
+        selectAll: this.checkPartialAllSelected(),
+        symbol: data.symbol,
+        marked: data.marked,
+        partials: this.getSelectedPartials(),
+      }
+      items.push(item)
+    },
+    getSelectedPartials() {
+      const partials = this.$refs
+        .partial
+        .filter(component => component.selected === true)
+        .map(component => ({
+          position: component.position,
+          ..._cloneDeep(component.partialData),
+        }))
+      return _cloneDeep(partials)
+    },
+    checkPartialAllSelected() {
+      if(!Array.isArray(this.$refs.partial)) return false
+      return this.$refs.partial
+        .filter(component => component.isOuter === false)
+        .every(component => component.selected === true)
+    },
+    checkPartialAnySelected() {
+      if(!Array.isArray(this.$refs.partial)) return false
+      return this.$refs.partial.some(component => component.selected === true)
+    },
     toggleSelectAll() {
       this.selectAll = !this.selectAll
       if(!Array.isArray(this.$refs.partial)) return

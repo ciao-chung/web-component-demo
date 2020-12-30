@@ -22,10 +22,6 @@ export default {
   },
   mounted() {
     this.init()
-    this.$bus.$on(this.$CONSTANT.EVENT_GET_SELECTED, (items) => {
-      if(!this.selected) return
-      items.push(_cloneDeep(this.partialData))
-    })
   },
   methods: {
     async init() {

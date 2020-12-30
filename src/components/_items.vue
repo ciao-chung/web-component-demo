@@ -29,6 +29,7 @@ export default {
 
 <style lang="sass" type="text/sass" scoped>
 div[dental-chart="items-root"]
+  margin: 20px 0
   button
     background-color: white
     padding: 5px 10px
