@@ -18,11 +18,16 @@ export default {
   created() {},
   methods: {
     async setupStyle() {
-      const items = []
-      this.$bus.$emit(this.$CONSTANT.EVENT_GET_SELECTED, items)
+      const teeth = []
+      this.$bus.$emit(this.$CONSTANT.EVENT_GET_SELECTED, teeth)
       await this.$nextTick()
-      console.warn('items', items)
+      for(const tooth of teeth) {
+        this.handleToothData(tooth)
+      }
     },
+    handleToothData(tooth) {
+      console.warn('tooth', tooth, tooth.selectAll)
+    }
   },
 }
 </script>

@@ -45,13 +45,13 @@ export default {
   },
   mounted() {
     this.setupPaper()
-    this.$bus.$on(this.$CONSTANT.EVENT_GET_SELECTED, (items) => this.onGetEvent(items))
+    this.$bus.$on(this.$CONSTANT.EVENT_GET_SELECTED, (teeth) => this.onGetEvent(teeth))
   },
   methods: {
-    onGetEvent(items) {
+    onGetEvent(teeth) {
       if(this.checkPartialAnySelected() === false) return
       let data = _cloneDeep(this.data)
-      let item = {
+      let tooth = {
         rowIndex: this.rowIndex,
         columnIndex: this.columnIndex,
         selectAll: this.checkPartialAllSelected(),
@@ -59,7 +59,7 @@ export default {
         marked: data.marked,
         partials: this.getSelectedPartials(),
       }
-      items.push(item)
+      teeth.push(tooth)
     },
     getSelectedPartials() {
       const partials = this.$refs

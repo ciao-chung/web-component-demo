@@ -8,5 +8,5 @@ import Vue from 'vue'
 Vue.prototype.$bus = new Vue()
 
 Vue.prototype.$CONSTANT = {
-  EVENT_GET_SELECTED: 'event-get-selected',
+  EVENT_GET_SELECTED: 'event-get-selected', // 取得已選取牙齒的event bus
 }
